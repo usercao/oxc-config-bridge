@@ -1,6 +1,6 @@
 {
   "name": "oxc-config-bridge",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Bridge one type-safe config to the native Oxlint and Oxfmt configuration formats",
   "keywords": [
     "oxc",
