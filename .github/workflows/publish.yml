@@ -25,5 +25,10 @@ jobs:
           package-manager-cache: false
       - run: npm ci
       - name: Verify release tag
-        run: test "v$(node --print "require('./package.json').version")" = "$GITHUB_REF_NAME"
+        run: |
+          expected_tag="v$(node --print "require('./package.json').version")"
+          if [ "$GITHUB_REF_NAME" != "$expected_tag" ]; then
+            echo "::error::Release tag $GITHUB_REF_NAME does not match package.json version $expected_tag"
+            exit 1
+          fi
       - run: npm publish
