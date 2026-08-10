@@ -62,6 +62,47 @@ test('returns the underlying Oxlint failure code and still cleans its proxy', as
   )
 })
 
+test('preserves sortPackageJson rules for package.json files', async () => {
+  const directory = await mkdtemp(path.join(os.tmpdir(), 'oxc-config-bridge-package-json-'))
+  temporaryDirectories.push(directory)
+
+  await writeFile(
+    path.join(directory, 'oxc.config.mjs'),
+    `export default {
+  oxfmt: {
+    sortPackageJson: {
+      sortScripts: true,
+    },
+  },
+}\n`,
+  )
+  const packageJsonPath = path.join(directory, 'package.json')
+  await writeFile(
+    packageJsonPath,
+    `{
+  "name": "fixture",
+  "scripts": {
+    "zeta": "echo z",
+    "alpha": "echo a",
+    "beta": "echo b"
+  }
+}\n`,
+  )
+
+  assert.equal(await runTool('oxfmt', ['.'], { cwd: directory }), 0)
+  assert.equal(
+    await readFile(packageJsonPath, 'utf8'),
+    `{
+  "name": "fixture",
+  "scripts": {
+    "alpha": "echo a",
+    "beta": "echo b",
+    "zeta": "echo z"
+  }
+}\n`,
+  )
+})
+
 test('rejects a second native config argument', async () => {
   const directory = await createFixture()
 
