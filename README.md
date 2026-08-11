@@ -62,6 +62,12 @@ Generate stable native config files for editor integrations:
 oxc-config-bridge prepare --output-dir ./.config/oxc
 ```
 
+Remove them when needed:
+
+```sh
+oxc-config-bridge clean --output-dir ./.config/oxc
+```
+
 Point the extension at those files in `.vscode/settings.json`:
 
 ```jsonc
@@ -77,7 +83,7 @@ Ignore the generated directory:
 .config/oxc/
 ```
 
-Run `prepare` again after changing the unified config path.
+Generate with `prepare`, remove with `clean`, and run `prepare` again after changing the unified config path.
 
 ## Requirements and scope
 
