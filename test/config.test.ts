@@ -1,14 +1,13 @@
-import assert from 'node:assert/strict'
 import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
-import { afterEach, test } from 'node:test'
 import { pathToFileURL } from 'node:url'
+import { afterEach, expect, test } from 'vitest'
 
-import { findConfig, loadConfig } from '../dist/config.js'
-import { cleanEditorConfigs, createTemporaryProxy, prepareEditorConfigs } from '../dist/proxy.js'
+import { findConfig, loadConfig } from '../src/config.js'
+import { cleanEditorConfigs, createTemporaryProxy, prepareEditorConfigs } from '../src/proxy.js'
 
-const temporaryDirectories = []
+const temporaryDirectories: string[] = []
 
 afterEach(async () => {
   await Promise.all(
@@ -38,8 +37,8 @@ test('finds and loads a unified config from a parent directory', async () => {
   const nestedDirectory = path.join(directory, 'packages', 'app')
   await mkdir(nestedDirectory, { recursive: true })
 
-  assert.equal(await findConfig(nestedDirectory), configPath)
-  assert.deepEqual(await loadConfig(configPath), {
+  expect(await findConfig(nestedDirectory)).toBe(configPath)
+  expect(await loadConfig(configPath)).toEqual({
     oxlint: { rules: { 'no-debugger': 'deny' } },
     oxfmt: { semi: false, singleQuote: true },
   })
@@ -49,12 +48,12 @@ test('creates a temporary proxy beside the unified config and removes it', async
   const { configPath, directory } = await createFixture()
   const proxy = await createTemporaryProxy(configPath, 'oxlint')
 
-  assert.equal(path.dirname(proxy.path), directory)
+  expect(path.dirname(proxy.path)).toBe(directory)
   const proxyModule = await import(`${pathToFileURL(proxy.path).href}?test=${Date.now()}`)
-  assert.deepEqual(proxyModule.default, { rules: { 'no-debugger': 'deny' } })
+  expect(proxyModule.default).toEqual({ rules: { 'no-debugger': 'deny' } })
 
   await proxy.remove()
-  await assert.rejects(readFile(proxy.path), { code: 'ENOENT' })
+  await expect(readFile(proxy.path)).rejects.toMatchObject({ code: 'ENOENT' })
 })
 
 test('prepares and cleans stable editor configs', async () => {
@@ -62,15 +61,15 @@ test('prepares and cleans stable editor configs', async () => {
   const outputDirectory = path.join(directory, 'tooling', 'oxc-config-bridge')
   const paths = await prepareEditorConfigs({ configPath, outputDirectory })
 
-  assert.equal(paths.oxlint, path.join(outputDirectory, '.oxc-bridge.oxlint.generated.mjs'))
-  assert.equal(paths.oxfmt, path.join(outputDirectory, '.oxc-bridge.oxfmt.generated.mjs'))
+  expect(paths.oxlint).toBe(path.join(outputDirectory, '.oxc-bridge.oxlint.generated.mjs'))
+  expect(paths.oxfmt).toBe(path.join(outputDirectory, '.oxc-bridge.oxfmt.generated.mjs'))
 
-  const lintModule = await import(`${pathToFileURL(paths.oxlint).href}?test=${Date.now()}`)
-  const fmtModule = await import(`${pathToFileURL(paths.oxfmt).href}?test=${Date.now()}`)
-  assert.deepEqual(lintModule.default, { rules: { 'no-debugger': 'deny' } })
-  assert.deepEqual(fmtModule.default, { semi: false, singleQuote: true })
+  const lintModule = await import(`${pathToFileURL(paths.oxlint!).href}?test=${Date.now()}`)
+  const fmtModule = await import(`${pathToFileURL(paths.oxfmt!).href}?test=${Date.now()}`)
+  expect(lintModule.default).toEqual({ rules: { 'no-debugger': 'deny' } })
+  expect(fmtModule.default).toEqual({ semi: false, singleQuote: true })
 
   await cleanEditorConfigs({ configPath, outputDirectory })
-  await assert.rejects(readFile(paths.oxlint), { code: 'ENOENT' })
-  await assert.rejects(readFile(paths.oxfmt), { code: 'ENOENT' })
+  await expect(readFile(paths.oxlint!)).rejects.toMatchObject({ code: 'ENOENT' })
+  await expect(readFile(paths.oxfmt!)).rejects.toMatchObject({ code: 'ENOENT' })
 })

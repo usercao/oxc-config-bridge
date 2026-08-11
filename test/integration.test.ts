@@ -1,12 +1,11 @@
-import assert from 'node:assert/strict'
 import { mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
-import { afterEach, test } from 'node:test'
+import { afterEach, expect, test } from 'vitest'
 
-import { runTool } from '../dist/runner.js'
+import { runTool } from '../src/runner.js'
 
-const temporaryDirectories = []
+const temporaryDirectories: string[] = []
 
 afterEach(async () => {
   await Promise.all(
@@ -35,17 +34,13 @@ test('runs Oxfmt and Oxlint with their unified config sections', async () => {
   const sourcePath = path.join(directory, 'source.ts')
   await writeFile(sourcePath, `const message = "hello";\nconsole.log(message);\n`)
 
-  assert.equal(await runTool('oxfmt', ['source.ts'], { cwd: directory }), 0)
-  assert.equal(
-    await readFile(sourcePath, 'utf8'),
-    `const message = 'hello'\nconsole.log(message)\n`,
-  )
-  assert.equal(await runTool('oxfmt', ['--check', '.'], { cwd: directory }), 0)
-  assert.equal(await runTool('oxlint', ['source.ts'], { cwd: directory }), 0)
+  expect(await runTool('oxfmt', ['source.ts'], { cwd: directory })).toBe(0)
+  expect(await readFile(sourcePath, 'utf8')).toBe(`const message = 'hello'\nconsole.log(message)\n`)
+  expect(await runTool('oxfmt', ['--check', '.'], { cwd: directory })).toBe(0)
+  expect(await runTool('oxlint', ['source.ts'], { cwd: directory })).toBe(0)
 
   const remainingFiles = await readdir(directory)
-  assert.equal(
-    remainingFiles.some((filename) => /^\.oxc-bridge\.(oxlint|oxfmt)\./.test(filename)),
+  expect(remainingFiles.some((filename) => /^\.oxc-bridge\.(oxlint|oxfmt)\./.test(filename))).toBe(
     false,
   )
 })
@@ -54,12 +49,9 @@ test('returns the underlying Oxlint failure code and still cleans its proxy', as
   const directory = await createFixture()
   await writeFile(path.join(directory, 'source.ts'), 'debugger\n')
 
-  assert.notEqual(await runTool('oxlint', ['source.ts'], { cwd: directory }), 0)
+  expect(await runTool('oxlint', ['source.ts'], { cwd: directory })).not.toBe(0)
   const remainingFiles = await readdir(directory)
-  assert.equal(
-    remainingFiles.some((filename) => filename.startsWith('.oxc-bridge.oxlint.')),
-    false,
-  )
+  expect(remainingFiles.some((filename) => filename.startsWith('.oxc-bridge.oxlint.'))).toBe(false)
 })
 
 test('preserves sortPackageJson rules for package.json files', async () => {
@@ -89,24 +81,21 @@ test('preserves sortPackageJson rules for package.json files', async () => {
 }\n`,
   )
 
-  assert.equal(await runTool('oxfmt', ['.'], { cwd: directory }), 0)
-  assert.equal(
-    await readFile(packageJsonPath, 'utf8'),
-    `{
+  expect(await runTool('oxfmt', ['.'], { cwd: directory })).toBe(0)
+  expect(await readFile(packageJsonPath, 'utf8')).toBe(`{
   "name": "fixture",
   "scripts": {
     "alpha": "echo a",
     "beta": "echo b",
     "zeta": "echo z"
   }
-}\n`,
-  )
+}\n`)
 })
 
 test('rejects a second native config argument', async () => {
   const directory = await createFixture()
 
-  await assert.rejects(runTool('oxlint', ['--config', 'other.ts'], { cwd: directory }), {
-    message: /use --unified-config/,
-  })
+  await expect(runTool('oxlint', ['--config', 'other.ts'], { cwd: directory })).rejects.toThrow(
+    /use --unified-config/,
+  )
 })

@@ -46,13 +46,14 @@
     "prepack": "npm run build",
     "prepublishOnly": "npm test",
     "prepare:editor": "node dist/cli.js prepare --output-dir .",
-    "test": "tsc -p tsconfig.json && node --test test/*.test.mjs"
+    "test": "tsc -p tsconfig.json && tsc -p tsconfig.test.json --noEmit && vitest run"
   },
   "devDependencies": {
     "@types/node": "^24.13.3",
     "oxfmt": "0.62.0",
     "oxlint": "1.77.0",
-    "typescript": "~6.0.2"
+    "typescript": "~6.0.2",
+    "vitest": "^3.2.4"
   },
   "peerDependencies": {
     "oxfmt": ">=0.50.0",
