@@ -96,18 +96,6 @@ Run `prepare` again after moving or renaming the unified configuration file. Con
 - The unified config must default-export a plain object. Function and Promise exports are intentionally unsupported.
 - Nested unified configs are discovered by the wrapper CLI. Editor behavior is controlled by the two explicit generated config paths.
 
-## Automated dependency updates
-
-This repository includes [`.github/workflows/update-oxc-tools.yml`](./.github/workflows/update-oxc-tools.yml), a free GitHub Actions workflow that checks for new `oxfmt` and `oxlint` releases every Monday, updates `package.json` and `package-lock.json`, runs `npm test`, and pushes a commit with the `github-actions[bot]` identity.
-
-If you want to use the workflow in your own repository, make sure Actions has permission to write commits:
-
-- In GitHub, open Settings > Actions > General.
-- Set Workflow permissions to Read and write permissions.
-- If branch protection is enabled on `main`, allow GitHub Actions to bypass it or change the workflow to push to a dedicated branch and open a pull request instead.
-
-You can also run the workflow manually from the Actions tab through the `workflow_dispatch` trigger.
-
 ## License
 
 [MIT](./LICENSE)
