@@ -13,18 +13,10 @@ interface ResolveConfigOptions {
 export async function resolveConfig(
   options: ResolveConfigOptions,
   _command: 'build' | 'serve',
-): Promise<Record<string, unknown>> {
+): Promise<Awaited<ReturnType<typeof loadConfig>>> {
   if (!options.configFile) {
     throw new TypeError('vite-plus resolveConfig requires a configFile path')
   }
 
-  const config = await loadConfig(options.configFile)
-  const resolvedConfig: Record<string, unknown> = {}
-  if (config.oxlint !== undefined) {
-    resolvedConfig.lint = config.oxlint
-  }
-  if (config.oxfmt !== undefined) {
-    resolvedConfig.fmt = config.oxfmt
-  }
-  return resolvedConfig
+  return loadConfig(options.configFile)
 }

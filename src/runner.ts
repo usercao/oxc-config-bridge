@@ -5,7 +5,7 @@ import { constants as osConstants } from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { assertToolConfig, resolveConfigPath } from './config.js'
+import { resolveConfigPath } from './config.js'
 import type { OxcTool } from './index.js'
 
 const require = createRequire(import.meta.url)
@@ -54,7 +54,6 @@ export async function runTool(
 
   const cwd = path.resolve(options?.cwd ?? process.cwd())
   const configPath = await resolveConfigPath(options?.configPath, cwd)
-  await assertToolConfig(configPath, tool)
   const binPath = await resolveToolBin(tool)
   const child = spawn(
     process.execPath,

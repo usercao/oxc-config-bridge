@@ -1,6 +1,6 @@
 {
   "name": "oxc-config-bridge",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Run Oxlint and Oxfmt from one type-safe config without requiring Vite+",
   "keywords": [
     "oxc",

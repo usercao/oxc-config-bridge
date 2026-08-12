@@ -21,8 +21,8 @@ export async function cleanupTemporaryDirectories(): Promise<void> {
 export async function writeUnifiedConfig(
   directory: string,
   source = `export default {
-  oxlint: { rules: { 'no-debugger': 'deny' } },
-  oxfmt: { semi: false, singleQuote: true },
+  lint: { rules: { 'no-debugger': 'deny' } },
+  fmt: { semi: false, singleQuote: true },
 }
 `,
 ): Promise<string> {

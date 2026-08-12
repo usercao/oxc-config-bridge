@@ -5,8 +5,8 @@ import { runTool } from './runner.js'
 const HELP = `Usage: oxc-config-bridge <command> [options] [tool arguments]
 
 Commands:
-  lint       Run Oxlint with the oxlint section from oxc.config.*
-  fmt        Run Oxfmt with the oxfmt section from oxc.config.*
+  lint       Run Oxlint with the lint section from oxc.config.*
+  fmt        Run Oxfmt with the fmt section from oxc.config.*
 
 Options:
   --unified-config <path>  Use a specific bridge config instead of searching upward

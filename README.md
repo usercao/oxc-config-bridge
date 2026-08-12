@@ -1,6 +1,6 @@
 # Oxc Config Bridge
 
-Type-safe unified config for Oxlint and Oxfmt in Vite projects, without requiring Vite+.
+Use the Vite+ `lint` and `fmt` configuration fields with Oxlint and Oxfmt, without requiring Vite+.
 
 ## Installation
 
@@ -28,12 +28,12 @@ Add the bridge commands to `package.json`:
 import { defineConfig } from 'oxc-config-bridge'
 
 export default defineConfig({
-  oxlint: {
+  lint: {
     rules: {
       'no-debugger': 'deny',
     },
   },
-  oxfmt: {
+  fmt: {
     semi: false,
     singleQuote: true,
   },
@@ -54,7 +54,7 @@ Use `--unified-config` to specify a config file explicitly:
 oxc-config-bridge lint --unified-config ./configs/oxc.config.ts .
 ```
 
-The bridge resolves the unified config to an absolute path and passes it to the native Oxc CLI. Its short-lived child process supplies a private compatibility shim for Oxc's Vite+ config-loader protocol, mapping `oxlint` and `oxfmt` to the upstream `lint` and `fmt` fields. It does not install or start Vite+, create proxy configuration files, or require editor-specific settings.
+`oxc.config.*` uses the same `lint` and `fmt` fields as Vite+. The bridge resolves it to an absolute path and passes it to the native Oxc CLI. Its short-lived child process supplies the minimal Vite+ config-loader protocol needed for Oxc to read that file. It passes the configuration through unchanged, so Oxlint and Oxfmt retain their native validation and diagnostics. It does not install or start Vite+, create proxy configuration files, or require editor-specific settings.
 
 ## Requirements and scope
 

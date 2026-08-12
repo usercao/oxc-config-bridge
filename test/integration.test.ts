@@ -52,7 +52,7 @@ describe('runner integration', () => {
     await writeFile(
       path.join(directory, 'oxc.config.mjs'),
       `export default {
-  oxfmt: {
+  fmt: {
     sortPackageJson: {
       sortScripts: true,
     },
@@ -91,13 +91,11 @@ describe('runner integration', () => {
     )
   })
 
-  test('fails when the selected tool section is missing', async () => {
+  test('returns an error when the selected Vite+ section is missing', async () => {
     const { directory } = await createUnifiedFixture(`export default {
-  oxfmt: { semi: false },
+  fmt: { semi: false },
 }\n`)
 
-    await expect(runTool('oxlint', ['source.ts'], { cwd: directory })).rejects.toThrow(
-      /does not define an oxlint section/,
-    )
+    expect(await runTool('oxlint', ['source.ts'], { cwd: directory })).not.toBe(0)
   })
 })

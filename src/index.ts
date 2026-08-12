@@ -4,8 +4,8 @@ import type { OxlintConfig } from 'oxlint'
 export type OxcTool = 'oxfmt' | 'oxlint'
 
 export interface OxcConfig {
-  oxfmt?: OxfmtConfig
-  oxlint?: OxlintConfig
+  fmt?: OxfmtConfig
+  lint?: OxlintConfig
 }
 
 export function defineConfig<const Config extends OxcConfig>(config: Config): Config {

@@ -2,7 +2,7 @@ import { access } from 'node:fs/promises'
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'
 
-import type { OxcConfig, OxcTool } from './index.js'
+import type { OxcConfig } from './index.js'
 
 const CONFIG_FILENAMES = [
   'oxc.config.ts',
@@ -64,17 +64,7 @@ export async function loadConfig(configPath: string): Promise<OxcConfig> {
     throw new TypeError(`${absolutePath} must default-export a configuration object`)
   }
 
-  const config = configModule.default
-  for (const tool of ['oxlint', 'oxfmt'] as const) {
-    if (config[tool] !== undefined && !isObject(config[tool])) {
-      throw new TypeError(`The ${tool} section in ${absolutePath} must be an object`)
-    }
-  }
-  if (config.oxlint === undefined && config.oxfmt === undefined) {
-    throw new TypeError(`${absolutePath} must define an oxlint or oxfmt section`)
-  }
-
-  return config as OxcConfig
+  return configModule.default as OxcConfig
 }
 
 export async function resolveConfigPath(
@@ -82,11 +72,4 @@ export async function resolveConfigPath(
   cwd = process.cwd(),
 ): Promise<string> {
   return configuredPath ? path.resolve(cwd, configuredPath) : findConfig(cwd)
-}
-
-export async function assertToolConfig(configPath: string, tool: OxcTool): Promise<void> {
-  const config = await loadConfig(configPath)
-  if (config[tool] === undefined) {
-    throw new Error(`${configPath} does not define an ${tool} section`)
-  }
 }
