@@ -35,7 +35,7 @@ export async function createUnifiedFixture(source?: string): Promise<{
   configPath: string
   directory: string
 }> {
-  const directory = await createTempDirectory('oxc-config-bridge-test-')
+  const directory = await createTempDirectory('vite-oxc-bridge-test-')
   const configPath = await writeUnifiedConfig(directory, source)
   await writeFile(path.join(directory, 'vite.config.ts'), 'export default {}\n')
   return { configPath, directory }

@@ -53,7 +53,7 @@ describe('config discovery', () => {
   })
 
   test('rejects multiple unified configs in the same directory', async () => {
-    const directory = await createTempDirectory('oxc-config-bridge-multi-config-')
+    const directory = await createTempDirectory('vite-oxc-bridge-multi-config-')
     await writeFile(path.join(directory, 'oxc.config.mjs'), 'export default { lint: {} }\n')
     await writeFile(path.join(directory, 'oxc.config.js'), 'export default { fmt: {} }\n')
 

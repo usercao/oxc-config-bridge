@@ -3,7 +3,7 @@
 import { runTool } from './runner.js'
 import { initializeVsCodeSettings } from './vscode-settings.js'
 
-const HELP = `Usage: oxc-config-bridge <command> [options] [tool arguments]
+const HELP = `Usage: vite-oxc-bridge <command> [options] [tool arguments]
 
 Commands:
   init       Create Vite+-compatible VS Code settings
@@ -43,6 +43,6 @@ try {
   process.exitCode = await main()
 } catch (error) {
   const message = error instanceof Error ? error.message : String(error)
-  process.stderr.write(`oxc-config-bridge: ${message}\n`)
+  process.stderr.write(`vite-oxc-bridge: ${message}\n`)
   process.exitCode = 1
 }

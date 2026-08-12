@@ -16,7 +16,7 @@ afterEach(async () => {
 
 describe('VS Code settings initialization', () => {
   test('creates the current Vite+ VS Code settings', async () => {
-    const directory = await createTempDirectory('oxc-config-bridge-vscode-settings-')
+    const directory = await createTempDirectory('vite-oxc-bridge-vscode-settings-')
 
     await expect(initializeVsCodeSettings(directory)).resolves.toBe('created')
     const settingsText = await readFile(path.join(directory, '.vscode', 'settings.json'), 'utf8')
@@ -25,7 +25,7 @@ describe('VS Code settings initialization', () => {
   })
 
   test('merges missing Vite+ settings without replacing JSONC comments or existing values', async () => {
-    const directory = await createTempDirectory('oxc-config-bridge-vscode-settings-')
+    const directory = await createTempDirectory('vite-oxc-bridge-vscode-settings-')
     const settingsPath = path.join(directory, '.vscode', 'settings.json')
     await mkdir(path.dirname(settingsPath), { recursive: true })
     await writeFile(
@@ -55,7 +55,7 @@ describe('VS Code settings initialization', () => {
   })
 
   test('rejects a malformed settings file without replacing it', async () => {
-    const directory = await createTempDirectory('oxc-config-bridge-vscode-settings-')
+    const directory = await createTempDirectory('vite-oxc-bridge-vscode-settings-')
     const settingsPath = path.join(directory, '.vscode', 'settings.json')
     await mkdir(path.dirname(settingsPath), { recursive: true })
     await writeFile(settingsPath, '{ invalid')

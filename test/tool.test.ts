@@ -11,6 +11,7 @@ const require = createRequire(import.meta.url)
 const packageManifest = require('../package.json') as {
   bin: Record<string, string>
   dependencies: Record<string, string>
+  name: string
   peerDependencies: Record<string, string>
   version: string
 }
@@ -35,12 +36,14 @@ function runWrapper(tool: OxcTool): Promise<{ exitCode: number | null; stderr: s
 
 describe('Oxc tool integration', () => {
   test('owns the Oxc binaries that the editor auto-detects', () => {
+    expect(packageManifest.name).toBe('vite-oxc-bridge')
     expect(packageManifest.dependencies).toHaveProperty('oxfmt')
     expect(packageManifest.dependencies).toHaveProperty('oxlint')
     expect(packageManifest.dependencies).toHaveProperty('oxlint-tsgolint')
     expect(packageManifest.peerDependencies).not.toHaveProperty('oxfmt')
     expect(packageManifest.peerDependencies).not.toHaveProperty('oxlint')
     expect(packageManifest.bin).toMatchObject({
+      'vite-oxc-bridge': 'dist/cli.js',
       oxfmt: 'bin/oxfmt.js',
       oxlint: 'bin/oxlint.js',
     })
@@ -66,7 +69,7 @@ describe('Oxc tool integration', () => {
 
       expect(result.exitCode).toBe(1)
       expect(result.stderr).toContain(`This ${tool} wrapper is for IDE extension use only.`)
-      expect(result.stderr).toContain(`oxc-config-bridge ${tool === 'oxfmt' ? 'fmt' : 'lint'}`)
+      expect(result.stderr).toContain(`vite-oxc-bridge ${tool === 'oxfmt' ? 'fmt' : 'lint'}`)
       expect(result.stderr).toContain(`To ${action} your code`)
     }
   })

@@ -47,7 +47,7 @@ describe('runner integration', () => {
   })
 
   test('preserves sortPackageJson rules for package.json files', async () => {
-    const directory = await createTempDirectory('oxc-config-bridge-package-json-')
+    const directory = await createTempDirectory('vite-oxc-bridge-package-json-')
 
     await writeFile(
       path.join(directory, 'oxc.config.mjs'),

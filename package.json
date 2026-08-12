@@ -1,7 +1,7 @@
 {
-  "name": "oxc-config-bridge",
-  "version": "0.5.0",
-  "description": "Use Vite project config discovery with Oxlint and Oxfmt without Vite+",
+  "name": "vite-oxc-bridge",
+  "version": "0.6.0",
+  "description": "Use Oxc's Vite+ config discovery with Vite, without Vite+",
   "keywords": [
     "oxc",
     "oxfmt",
@@ -9,15 +9,16 @@
     "config",
     "formatter",
     "linter",
-    "vite"
+    "vite",
+    "vite-plus"
   ],
-  "homepage": "https://github.com/usercao/oxc-config-bridge#readme",
+  "homepage": "https://github.com/usercao/vite-oxc-bridge#readme",
   "bugs": {
-    "url": "https://github.com/usercao/oxc-config-bridge/issues"
+    "url": "https://github.com/usercao/vite-oxc-bridge/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/usercao/oxc-config-bridge.git"
+    "url": "git+https://github.com/usercao/vite-oxc-bridge.git"
   },
   "license": "MIT",
   "author": "usercao",
@@ -26,7 +27,7 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
-    "oxc-config-bridge": "dist/cli.js",
+    "vite-oxc-bridge": "dist/cli.js",
     "oxfmt": "bin/oxfmt.js",
     "oxlint": "bin/oxlint.js"
   },
@@ -52,9 +53,9 @@
   },
   "dependencies": {
     "jsonc-parser": "^3.3.1",
-    "oxfmt": "0.62.0",
-    "oxlint": "1.77.0",
-    "oxlint-tsgolint": "7.0.2001"
+    "oxfmt": "^0.63.0",
+    "oxlint": "^1.78.0",
+    "oxlint-tsgolint": "^7.0.2001"
   },
   "devDependencies": {
     "@types/node": "^24.13.3",

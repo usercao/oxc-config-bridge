@@ -10,8 +10,8 @@ Before releasing, confirm:
 
 - CI passes on `main`.
 - `package.json` contains the intended version.
-- `repository.url` still exactly matches `https://github.com/usercao/oxc-config-bridge`.
-- npm Trusted Publisher still authorizes `usercao/oxc-config-bridge` and `.github/workflows/publish.yml` for `npm publish`.
+- `repository.url` still exactly matches `https://github.com/usercao/vite-oxc-bridge`.
+- npm Trusted Publisher still authorizes `usercao/vite-oxc-bridge` and `.github/workflows/publish.yml` for `npm publish`.
 
 Run the complete local check:
 
