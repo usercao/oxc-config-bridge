@@ -1,4 +1,4 @@
-import { readFile, readdir, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { afterEach, describe, expect, test } from 'vitest'
 
@@ -10,7 +10,7 @@ afterEach(async () => {
 })
 
 describe('runner integration', () => {
-  test('runs Oxfmt and Oxlint with their unified config sections', async () => {
+  test('runs Oxfmt and Oxlint with their unified config sections without CLI proxies', async () => {
     const { directory } = await createUnifiedFixture()
     const sourcePath = path.join(directory, 'source.ts')
     await writeFile(sourcePath, `const message = "hello";\nconsole.log(message);\n`)
@@ -26,7 +26,18 @@ describe('runner integration', () => {
     )
   })
 
-  test('returns the underlying Oxlint failure code and still cleans its proxy', async () => {
+  test('loads a parent unified config from a nested working directory', async () => {
+    const { directory } = await createUnifiedFixture()
+    const nestedDirectory = path.join(directory, 'packages', 'app')
+    await mkdir(nestedDirectory, { recursive: true })
+    const sourcePath = path.join(nestedDirectory, 'source.ts')
+    await writeFile(sourcePath, 'const message = "hello";\n')
+
+    expect(await runTool('oxfmt', ['source.ts'], { cwd: nestedDirectory })).toBe(0)
+    expect(await readFile(sourcePath, 'utf8')).toBe("const message = 'hello'\n")
+  })
+
+  test('returns the underlying Oxlint failure code without creating a CLI proxy', async () => {
     const { directory } = await createUnifiedFixture()
     await writeFile(path.join(directory, 'source.ts'), 'debugger\n')
 

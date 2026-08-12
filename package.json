@@ -1,7 +1,7 @@
 {
   "name": "oxc-config-bridge",
-  "version": "0.1.3",
-  "description": "Bridge one type-safe config to the native Oxlint and Oxfmt configuration formats",
+  "version": "0.2.0",
+  "description": "Run Oxlint and Oxfmt from one type-safe config without requiring Vite+",
   "keywords": [
     "oxc",
     "oxfmt",
@@ -40,12 +40,10 @@
     "./package.json": "./package.json"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "node --input-type=module --eval \"import { rm } from 'node:fs/promises'; await rm('dist', { recursive: true, force: true })\" && tsc -p tsconfig.json",
     "check": "npm test && npm pack --dry-run",
-    "clean:editor": "node dist/cli.js clean --output-dir .",
     "prepack": "npm run build",
     "prepublishOnly": "npm test",
-    "prepare:editor": "node dist/cli.js prepare --output-dir .",
     "test": "tsc -p tsconfig.json && tsc -p tsconfig.test.json --noEmit && vitest run"
   },
   "devDependencies": {
@@ -56,8 +54,8 @@
     "vitest": "^3.2.4"
   },
   "peerDependencies": {
-    "oxfmt": ">=0.50.0",
-    "oxlint": ">=1.50.0"
+    "oxfmt": ">=0.62.0",
+    "oxlint": ">=1.77.0"
   },
   "engines": {
     "node": ">=22.18.0"

@@ -39,10 +39,3 @@ export async function createUnifiedFixture(source?: string): Promise<{
   const configPath = await writeUnifiedConfig(directory, source)
   return { configPath, directory }
 }
-
-export function requireValue<T>(value: T | undefined, label: string): T {
-  if (value === undefined) {
-    throw new Error(`${label} should be defined`)
-  }
-  return value
-}

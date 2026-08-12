@@ -1,15 +1,12 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises'
+import { mkdir, writeFile } from 'node:fs/promises'
 import path from 'node:path'
-import { pathToFileURL } from 'node:url'
 import { afterEach, describe, expect, test } from 'vitest'
 
 import { findConfig, loadConfig } from '../src/config.js'
-import { cleanEditorConfigs, createTemporaryProxy, prepareEditorConfigs } from '../src/proxy.js'
 import {
   cleanupTemporaryDirectories,
   createTempDirectory,
   createUnifiedFixture,
-  requireValue,
 } from './helpers.js'
 
 afterEach(async () => {
@@ -49,67 +46,3 @@ describe('config discovery', () => {
     await expect(findConfig(directory)).rejects.toThrow(/Multiple unified Oxc configs found/)
   })
 })
-
-describe('proxy generation', () => {
-  test('creates a temporary proxy beside the unified config and removes it', async () => {
-    const { configPath, directory } = await createUnifiedFixture()
-    const proxy = await createTemporaryProxy(configPath, 'oxlint')
-
-    expect(path.dirname(proxy.path)).toBe(directory)
-    expect(await readFile(proxy.path, 'utf8')).toContain('import config from "./oxc.config.mjs"')
-    const proxyModule = await import(`${pathToFileURL(proxy.path).href}?test=${Date.now()}`)
-    expect(proxyModule.default).toEqual({ rules: { 'no-debugger': 'deny' } })
-
-    await proxy.remove()
-    await expect(readFile(proxy.path)).rejects.toMatchObject({ code: 'ENOENT' })
-  })
-
-  test('prepares and cleans stable editor configs', async () => {
-    const { configPath, directory } = await createUnifiedFixture()
-    const outputDirectory = path.join(directory, 'tooling', 'oxc-config-bridge')
-    const paths = await prepareEditorConfigs({ configPath, outputDirectory })
-
-    expect(paths.oxlint).toBe(path.join(outputDirectory, '.oxc-bridge.oxlint.generated.mjs'))
-    expect(paths.oxfmt).toBe(path.join(outputDirectory, '.oxc-bridge.oxfmt.generated.mjs'))
-    const oxlintPath = requireValue(paths.oxlint, 'oxlint editor config path')
-    const oxfmtPath = requireValue(paths.oxfmt, 'oxfmt editor config path')
-
-    expect(await readFile(oxlintPath, 'utf8')).toContain('import config from "../../oxc.config.mjs"')
-    expect(await readFile(oxfmtPath, 'utf8')).toContain('import config from "../../oxc.config.mjs"')
-    const lintModule = await import(`${pathToFileURL(oxlintPath).href}?test=${Date.now()}`)
-    const fmtModule = await import(`${pathToFileURL(oxfmtPath).href}?test=${Date.now()}`)
-    expect(lintModule.default).toEqual({ rules: { 'no-debugger': 'deny' } })
-    expect(fmtModule.default).toEqual({ semi: false, singleQuote: true })
-
-    await cleanEditorConfigs({ configPath, outputDirectory })
-    await expect(readFile(oxlintPath)).rejects.toMatchObject({ code: 'ENOENT' })
-    await expect(readFile(oxfmtPath)).rejects.toMatchObject({ code: 'ENOENT' })
-  })
-
-  test('skips editor proxies for missing tool sections', async () => {
-    const { configPath, directory } = await createUnifiedFixture(`export default {
-  oxlint: { rules: { 'no-debugger': 'deny' } },
-}\n`)
-    const outputDirectory = path.join(directory, 'tooling', 'oxc-config-bridge')
-    const paths = await prepareEditorConfigs({ configPath, outputDirectory })
-
-    expect(paths.oxlint).toBe(path.join(outputDirectory, '.oxc-bridge.oxlint.generated.mjs'))
-    expect(paths.oxfmt).toBeUndefined()
-  })
-})
-
-  test('cleans generated editor configs when only outputDirectory is provided', async () => {
-    const directory = await createTempDirectory('oxc-config-bridge-clean-output-dir-')
-    const outputDirectory = path.join(directory, '.config', 'oxc')
-    const oxlintPath = path.join(outputDirectory, '.oxc-bridge.oxlint.generated.mjs')
-    const oxfmtPath = path.join(outputDirectory, '.oxc-bridge.oxfmt.generated.mjs')
-
-    await mkdir(outputDirectory, { recursive: true })
-    await writeFile(oxlintPath, 'export default {}\n')
-    await writeFile(oxfmtPath, 'export default {}\n')
-
-    await cleanEditorConfigs({ outputDirectory })
-
-    await expect(readFile(oxlintPath)).rejects.toMatchObject({ code: 'ENOENT' })
-    await expect(readFile(oxfmtPath)).rejects.toMatchObject({ code: 'ENOENT' })
-  })

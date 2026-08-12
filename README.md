@@ -1,6 +1,6 @@
 # Oxc Config Bridge
 
-Type-safe unified config for Oxlint and Oxfmt.
+Type-safe unified config for Oxlint and Oxfmt in Vite projects, without requiring Vite+.
 
 ## Installation
 
@@ -54,41 +54,13 @@ Use `--unified-config` to specify a config file explicitly:
 oxc-config-bridge lint --unified-config ./configs/oxc.config.ts .
 ```
 
-## Editors
-
-Generate stable native config files for editor integrations:
-
-```sh
-oxc-config-bridge prepare --output-dir ./.config/oxc
-```
-
-Remove them when needed:
-
-```sh
-oxc-config-bridge clean --output-dir ./.config/oxc
-```
-
-Point the extension at those files in `.vscode/settings.json`:
-
-```jsonc
-{
-  "oxc.configPath": "./.config/oxc/.oxc-bridge.oxlint.generated.mjs",
-  "oxc.fmt.configPath": "./.config/oxc/.oxc-bridge.oxfmt.generated.mjs",
-}
-```
-
-Ignore the generated directory:
-
-```gitignore
-.config/oxc/
-```
-
-Generate with `prepare`, remove with `clean`, and run `prepare` again after changing the unified config path.
+The bridge resolves the unified config to an absolute path and passes it to the native Oxc CLI. Its short-lived child process supplies a private compatibility shim for Oxc's Vite+ config-loader protocol, mapping `oxlint` and `oxfmt` to the upstream `lint` and `fmt` fields. It does not install or start Vite+, create proxy configuration files, or require editor-specific settings.
 
 ## Requirements and scope
 
 - Node.js 22.18 or newer is required for native TypeScript loading.
-- Install `oxlint` and `oxfmt` in the same project.
+- Install Oxlint 1.77 or newer and Oxfmt 0.62 or newer in the same project.
+- The CLI integration relies on the Vite+ config-loader protocol exposed by those versions, but does not require a `vite-plus` dependency.
 - The unified config must default-export a plain object.
 
 ## License

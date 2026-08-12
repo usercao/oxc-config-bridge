@@ -12,5 +12,4 @@ export function defineConfig<const Config extends OxcConfig>(config: Config): Co
   return config
 }
 
-export { cleanEditorConfigs, prepareEditorConfigs } from './proxy.js'
 export { runTool } from './runner.js'
