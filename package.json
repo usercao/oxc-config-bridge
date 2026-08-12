@@ -1,6 +1,6 @@
 {
   "name": "oxc-config-bridge",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Use Vite project config discovery with Oxlint and Oxfmt without Vite+",
   "keywords": [
     "oxc",
