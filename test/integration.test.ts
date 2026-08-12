@@ -100,4 +100,22 @@ describe('runner integration', () => {
 
     expect(await runTool('oxlint', ['source.ts'], { cwd: directory })).not.toBe(0)
   })
+
+  test('runs type-aware lint with the bridge-owned tsgolint runtime', async () => {
+    const { directory } = await createUnifiedFixture(`export default {
+  lint: { options: { typeAware: true } },
+}
+`)
+    await writeFile(
+      path.join(directory, 'tsconfig.json'),
+      `{
+  "compilerOptions": { "strict": true },
+  "include": ["source.ts"]
+}
+`,
+    )
+    await writeFile(path.join(directory, 'source.ts'), 'const _value: string = "ok"\n')
+
+    expect(await runTool('oxlint', ['--type-aware', 'source.ts'], { cwd: directory })).toBe(0)
+  })
 })

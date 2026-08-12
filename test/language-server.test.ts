@@ -146,7 +146,9 @@ async function formatWithLsp(configDirectory: string, sourcePath: string): Promi
   try {
     await session.request('initialize', {
       capabilities: { textDocument: { formatting: {} } },
-      initializationOptions: [{ options: null, workspaceUri: rootUri }],
+      initializationOptions: [
+        { options: { 'fmt.disableNestedConfig': true }, workspaceUri: rootUri },
+      ],
       processId: null,
       rootUri,
       workspaceFolders: [{ name: 'fixture', uri: rootUri }],
@@ -180,7 +182,7 @@ async function lintWithLsp(configDirectory: string, sourcePath: string): Promise
         textDocument: { diagnostic: {} },
         workspace: { diagnostics: { refreshSupport: true } },
       },
-      initializationOptions: [{ options: null, workspaceUri: rootUri }],
+      initializationOptions: [{ options: { disableNestedConfig: true }, workspaceUri: rootUri }],
       processId: process.pid,
       rootUri: null,
       workspaceFolders: [{ name: 'fixture', uri: rootUri }],

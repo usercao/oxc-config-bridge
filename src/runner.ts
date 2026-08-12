@@ -28,7 +28,7 @@ export async function runTool(
   const cwd = path.resolve(options?.cwd ?? process.cwd())
   const binPath = await resolveToolBin(tool)
   const environment = { ...process.env }
-  enableVitePlusConfigDiscovery(environment)
+  enableVitePlusConfigDiscovery(environment, tool)
   const child = spawn(
     process.execPath,
     ['--import', VITE_PLUS_PRELOAD_URL, binPath, ...args],
