@@ -2,7 +2,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const moduleExtension = path.extname(fileURLToPath(import.meta.url))
-const { loadConfig } = (await import(
+const { findConfig, loadConfig } = (await import(
   new URL(`./config${moduleExtension}`, import.meta.url).href
 )) as typeof import('./config.js')
 
@@ -18,5 +18,6 @@ export async function resolveConfig(
     throw new TypeError('vite-plus resolveConfig requires a configFile path')
   }
 
-  return loadConfig(options.configFile)
+  const configPath = await findConfig(path.dirname(path.resolve(options.configFile)))
+  return loadConfig(configPath)
 }

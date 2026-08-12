@@ -59,6 +59,7 @@ describe('runner integration', () => {
   },
 }\n`,
     )
+    await writeFile(path.join(directory, 'vite.config.ts'), 'export default {}\n')
     const packageJsonPath = path.join(directory, 'package.json')
     await writeFile(
       packageJsonPath,
@@ -83,12 +84,13 @@ describe('runner integration', () => {
 }\n`)
   })
 
-  test('rejects a second native config argument', async () => {
+  test('passes a native Vite config argument through to Oxc', async () => {
     const { directory } = await createUnifiedFixture()
+    const sourcePath = path.join(directory, 'source.ts')
+    await writeFile(sourcePath, 'const message = "hello";\n')
 
-    await expect(runTool('oxlint', ['--config', 'other.ts'], { cwd: directory })).rejects.toThrow(
-      /use --unified-config/,
-    )
+    expect(await runTool('oxfmt', ['--config', 'vite.config.ts', 'source.ts'], { cwd: directory })).toBe(0)
+    expect(await readFile(sourcePath, 'utf8')).toBe("const message = 'hello'\n")
   })
 
   test('returns an error when the selected Vite+ section is missing', async () => {

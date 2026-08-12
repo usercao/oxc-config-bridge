@@ -66,10 +66,3 @@ export async function loadConfig(configPath: string): Promise<OxcConfig> {
 
   return configModule.default as OxcConfig
 }
-
-export async function resolveConfigPath(
-  configuredPath: string | undefined,
-  cwd = process.cwd(),
-): Promise<string> {
-  return configuredPath ? path.resolve(cwd, configuredPath) : findConfig(cwd)
-}

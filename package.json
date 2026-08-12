@@ -1,14 +1,15 @@
 {
   "name": "oxc-config-bridge",
   "version": "0.3.0",
-  "description": "Run Oxlint and Oxfmt from one type-safe config without requiring Vite+",
+  "description": "Use Vite project config discovery with Oxlint and Oxfmt without Vite+",
   "keywords": [
     "oxc",
     "oxfmt",
     "oxlint",
     "config",
     "formatter",
-    "linter"
+    "linter",
+    "vite"
   ],
   "homepage": "https://github.com/usercao/oxc-config-bridge#readme",
   "bugs": {
@@ -25,9 +26,12 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
-    "oxc-config-bridge": "dist/cli.js"
+    "oxc-config-bridge": "dist/cli.js",
+    "oxfmt": "bin/oxfmt.js",
+    "oxlint": "bin/oxlint.js"
   },
   "files": [
+    "bin",
     "dist",
     "README.md"
   ],
@@ -51,11 +55,13 @@
     "oxfmt": "0.62.0",
     "oxlint": "1.77.0",
     "typescript": "~6.0.2",
+    "vite": "7.3.6",
     "vitest": "^3.2.4"
   },
   "peerDependencies": {
     "oxfmt": ">=0.62.0",
-    "oxlint": ">=1.77.0"
+    "oxlint": ">=1.77.0",
+    "vite": ">=5.0.0"
   },
   "engines": {
     "node": ">=22.18.0"

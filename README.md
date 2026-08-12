@@ -1,11 +1,11 @@
 # Oxc Config Bridge
 
-Use the Vite+ `lint` and `fmt` configuration fields with Oxlint and Oxfmt, without requiring Vite+.
+Use the Vite+ `lint` and `fmt` configuration fields with Oxlint and Oxfmt in a Vite project, without installing Vite+.
 
 ## Installation
 
 ```sh
-npm install --save-dev oxc-config-bridge oxlint oxfmt
+npm install --save-dev vite oxc-config-bridge oxlint oxfmt
 ```
 
 Add the bridge commands to `package.json`:
@@ -22,6 +22,15 @@ Add the bridge commands to `package.json`:
 ```
 
 ## Configuration
+
+`vite.config.ts` is required. Oxc uses it as the native Vite+ discovery anchor; the bridge then reads the nearest `oxc.config.*` from that directory upward.
+
+```ts
+// vite.config.ts
+import { defineConfig } from 'vite'
+
+export default defineConfig({})
+```
 
 ```ts
 // oxc.config.ts
@@ -48,19 +57,29 @@ oxc-config-bridge fmt --check .
 oxc-config-bridge fmt .
 ```
 
-Use `--unified-config` to specify a config file explicitly:
+`oxc.config.*` uses the same `lint` and `fmt` fields as Vite+. The bridge sets Oxc's Vite+ discovery environment and supplies the minimal `vite-plus.resolveConfig()` protocol that Oxc calls after finding `vite.config.ts`. The shim resolves the nearest `oxc.config.*` and returns it unchanged, so Oxlint and Oxfmt retain their native validation and diagnostics. Vite itself and its plugins are not started or evaluated.
 
-```sh
-oxc-config-bridge lint --unified-config ./configs/oxc.config.ts .
+## VS Code
+
+The package also exposes Vite+-style `oxfmt` and `oxlint` wrappers. Package managers can choose a colliding native Oxc bin instead, so point the official Oxc extension at the wrappers to make discovery deterministic:
+
+```jsonc
+{
+  "editor.defaultFormatter": "oxc.oxc-vscode",
+  "editor.formatOnSave": true,
+  "oxc.path.oxfmt": "./node_modules/oxc-config-bridge/bin/oxfmt.js",
+  "oxc.path.oxlint": "./node_modules/oxc-config-bridge/bin/oxlint.js"
+}
 ```
 
-`oxc.config.*` uses the same `lint` and `fmt` fields as Vite+. The bridge resolves it to an absolute path and passes it to the native Oxc CLI. Its short-lived child process supplies the minimal Vite+ config-loader protocol needed for Oxc to read that file. It passes the configuration through unchanged, so Oxlint and Oxfmt retain their native validation and diagnostics. It does not install or start Vite+, create proxy configuration files, or require editor-specific settings.
+Restart the Oxc formatter and linter after changing these settings.
 
 ## Requirements and scope
 
 - Node.js 22.18 or newer is required for native TypeScript loading.
+- Install Vite 5 or newer and keep a `vite.config.ts` in the project root.
 - Install Oxlint 1.77 or newer and Oxfmt 0.62 or newer in the same project.
-- The CLI integration relies on the Vite+ config-loader protocol exposed by those versions, but does not require a `vite-plus` dependency.
+- The bridge relies on the Vite+ config-loader protocol exposed by those Oxc versions, but does not require a `vite-plus` dependency.
 - The unified config must default-export a plain object.
 
 ## License
