@@ -24,11 +24,18 @@ jobs:
           registry-url: https://registry.npmjs.org
           package-manager-cache: false
       - run: npm ci
-      - name: Verify release tag
+      - name: Set package version from release
+        env:
+          RELEASE_VERSION: ${{ github.event.release.tag_name }}
         run: |
-          expected_tag="v$(node --print "require('./package.json').version")"
-          if [ "$GITHUB_REF_NAME" != "$expected_tag" ]; then
-            echo "::error::Release tag $GITHUB_REF_NAME does not match package.json version $expected_tag"
+          if [[ "$RELEASE_VERSION" == [vV]* ]]; then
+            echo "::error::Release tag must be an npm version without a v prefix, for example 0.6.1"
+            exit 1
+          fi
+          npm version "$RELEASE_VERSION" --no-git-tag-version --allow-same-version
+          package_version="$(node --print "require('./package.json').version")"
+          if [ "$package_version" != "$RELEASE_VERSION" ]; then
+            echo "::error::Release tag must be a complete npm semantic version, for example 0.6.1"
             exit 1
           fi
       - run: npm publish

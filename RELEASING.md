@@ -9,7 +9,6 @@ Do not add an `NPM_TOKEN` or `NODE_AUTH_TOKEN` secret. The publish workflow uses
 Before releasing, confirm:
 
 - CI passes on `main`.
-- `package.json` contains the intended version.
 - `repository.url` still exactly matches `https://github.com/usercao/vite-oxc-bridge`.
 - npm Trusted Publisher still authorizes `usercao/vite-oxc-bridge` and `.github/workflows/publish.yml` for `npm publish`.
 
@@ -21,21 +20,18 @@ npm run check
 
 ## Publish a release
 
-Choose the correct semantic-version increment:
+On GitHub, create and publish a release from `main`. In the **Choose a tag** field, enter a complete npm version without a `v` prefix, for example `0.6.1`, and let GitHub create the tag automatically.
 
-```sh
-npm version patch # or minor / major
-git push origin main --follow-tags
-```
-
-On GitHub, create and publish a release using the tag created by `npm version`, for example `v0.1.1`.
+`1` alone is not a valid npm package version; use `1.0.0` instead. No local `npm version` or `git tag` command is needed.
 
 Publishing the GitHub release triggers `.github/workflows/publish.yml`. The workflow:
 
 - Exchanges GitHub's OIDC identity for a short-lived npm credential.
-- Verifies that the release tag equals `v` plus the version in `package.json`.
+- Uses the release tag as the npm package version and rejects a `v` prefix or incomplete version.
 - Installs dependencies from `package-lock.json`.
 - Runs the package test suite through npm lifecycle scripts.
 - Publishes to npm with provenance.
+
+GitHub Releases always require a tag, but creating the release in the GitHub UI creates that tag for you. The workflow does not create a Git tag or commit.
 
 If publishing fails with `ENEEDAUTH`, verify the trusted publisher's repository and workflow filename before changing any npm access settings. Do not work around the failure by creating a long-lived automation token.
