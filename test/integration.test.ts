@@ -40,8 +40,17 @@ describe('runner integration', () => {
   test('returns the underlying Oxlint failure code without creating a CLI proxy', async () => {
     const { directory } = await createUnifiedFixture()
     await writeFile(path.join(directory, 'source.ts'), 'debugger\n')
+    let output = ''
 
-    expect(await runTool('oxlint', ['source.ts'], { cwd: directory })).not.toBe(0)
+    expect(
+      await runTool('oxlint', ['source.ts'], {
+        cwd: directory,
+        onOutput: (chunk) => {
+          output += chunk
+        },
+      }),
+    ).not.toBe(0)
+    expect(output).toContain('eslint(no-debugger)')
     const remainingFiles = await readdir(directory)
     expect(remainingFiles.some((filename) => filename.startsWith('.oxc-bridge.oxlint.'))).toBe(false)
   })

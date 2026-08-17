@@ -23,7 +23,7 @@ function signalExitCode(signal: NodeJS.Signals | null): number {
 export async function runTool(
   tool: OxcTool,
   args: string[],
-  options?: { cwd?: string },
+  options?: { cwd?: string; onOutput?: (output: string) => void },
 ): Promise<number> {
   const cwd = path.resolve(options?.cwd ?? process.cwd())
   const binPath = await resolveToolBin(tool)
@@ -35,9 +35,15 @@ export async function runTool(
     {
       cwd,
       env: environment,
-      stdio: 'inherit',
+      stdio: options?.onOutput ? ['inherit', 'pipe', 'pipe'] : 'inherit',
     },
   )
+  if (options?.onOutput) {
+    child.stdout?.setEncoding('utf8')
+    child.stderr?.setEncoding('utf8')
+    child.stdout?.on('data', (chunk: string) => options.onOutput!(chunk))
+    child.stderr?.on('data', (chunk: string) => options.onOutput!(chunk))
+  }
   const listeners = FORWARDED_SIGNALS.map((signal) => {
     const listener = () => child.kill(signal)
     process.once(signal, listener)
