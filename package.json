@@ -1,6 +1,6 @@
 {
   "name": "vite-oxc-bridge",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "description": "Use Oxc's Vite+ config discovery with Vite, without Vite+",
   "keywords": [
     "config",
@@ -61,8 +61,8 @@
   },
   "dependencies": {
     "jsonc-parser": "^3.3.1",
-    "oxfmt": "^0.63.0",
-    "oxlint": "^1.78.0",
+    "oxfmt": "^0.64.0",
+    "oxlint": "^1.79.0",
     "oxlint-tsgolint": "^7.0.2001"
   },
   "devDependencies": {
