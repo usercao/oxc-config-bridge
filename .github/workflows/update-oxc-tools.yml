@@ -1,4 +1,4 @@
-name: Update Oxc toolchain
+name: Update dependencies
 
 on:
   schedule:
@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: update-oxc-tools
+  group: update-dependencies
   cancel-in-progress: false
 
 jobs:
@@ -37,17 +37,34 @@ jobs:
             ${{ runner.os }}-yarn-
       - run: yarn install --immutable
 
-      - name: Upgrade Oxc toolchain
-        run: yarn up --no-time-gate oxfmt oxlint oxlint-tsgolint
+      - name: Upgrade dependencies
+        run: |
+          node --input-type=module --eval '
+            import { spawnSync } from "node:child_process"
+            import { readFile } from "node:fs/promises"
+
+            const packageJson = JSON.parse(await readFile("package.json", "utf8"))
+            const dependencies = Object.keys(packageJson.dependencies ?? {})
+            if (dependencies.length === 0) {
+              process.exit(0)
+            }
+
+            const result = spawnSync("yarn", ["up", "--no-time-gate", ...dependencies], {
+              stdio: "inherit",
+            })
+            process.exit(result.status ?? 1)
+          '
 
       - name: Stop if no dependency changes
         id: changes
         run: |
           if git diff --quiet -- package.json yarn.lock; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No production dependency updates are available." >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
           echo "changed=true" >> "$GITHUB_OUTPUT"
+          echo "Production dependency updates are available." >> "$GITHUB_STEP_SUMMARY"
 
       - if: steps.changes.outputs.changed == 'true'
         run: yarn format
@@ -62,5 +79,5 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add package.json yarn.lock
           git add -u
-          git commit -m 'chore: upgrade oxfmt and oxlint'
+          git commit -m 'chore: upgrade dependencies'
           git push
