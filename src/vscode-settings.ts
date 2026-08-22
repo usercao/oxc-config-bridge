@@ -112,7 +112,9 @@ export async function initializeVsCodeSettings(
   const errors: ParseError[] = []
   const existing = parse(originalText, errors, { allowTrailingComma: true })
   if (errors.length > 0 || !isJsonObject(existing)) {
-    throw new Error(`Unable to merge ${path.relative(projectRoot, settingsPath)}: expected a JSONC object`)
+    throw new Error(
+      `Unable to merge ${path.relative(projectRoot, settingsPath)}: expected a JSONC object`,
+    )
   }
 
   const updatedText = mergeMissingSettings(

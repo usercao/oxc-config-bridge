@@ -1,7 +1,8 @@
+import { spawn } from 'node:child_process'
 import { access } from 'node:fs/promises'
 import { createRequire } from 'node:module'
-import { spawn } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
+
 import { describe, expect, test } from 'vitest'
 
 import type { OxcTool } from '../src/index.js'

@@ -51,7 +51,7 @@ Oxc finds `vite.config.*`, then calls the Vite+ config-loader protocol. Vite Oxc
 
 ## Requirements
 
-- Node.js 22.18 or later
+- Node.js 24.19 or later
 - Vite 5 or later
 - An `oxc.config.*` file that default-exports an object
 

@@ -8,14 +8,18 @@ function isEditorInvocation(tool: OxcTool): boolean {
   if (process.argv.includes('--lsp')) {
     return true
   }
-  return tool === 'oxfmt' && process.argv.some((argument) => argument.startsWith('--stdin-filepath'))
+  return (
+    tool === 'oxfmt' && process.argv.some((argument) => argument.startsWith('--stdin-filepath'))
+  )
 }
 
 export async function runWrappedTool(tool: OxcTool): Promise<void> {
   if (!isEditorInvocation(tool)) {
     const command = tool === 'oxfmt' ? 'fmt' : 'lint'
     process.stderr.write(`This ${tool} wrapper is for IDE extension use only.\n`)
-    process.stderr.write(`To ${command === 'fmt' ? 'format' : 'lint'} your code, run: vite-oxc-bridge ${command}\n`)
+    process.stderr.write(
+      `To ${command === 'fmt' ? 'format' : 'lint'} your code, run: vite-oxc-bridge ${command}\n`,
+    )
     process.exitCode = 1
     return
   }

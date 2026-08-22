@@ -1,5 +1,6 @@
 import { mkdir, writeFile } from 'node:fs/promises'
 import path from 'node:path'
+
 import { afterEach, describe, expect, test } from 'vitest'
 
 import { findConfig, loadConfig } from '../src/config.js'
@@ -49,7 +50,9 @@ describe('config discovery', () => {
   test('rejects a non-object default export', async () => {
     const { configPath } = await createUnifiedFixture("export default 'deny'\n")
 
-    await expect(loadConfig(configPath)).rejects.toThrow(/must default-export a configuration object/)
+    await expect(loadConfig(configPath)).rejects.toThrow(
+      /must default-export a configuration object/,
+    )
   })
 
   test('rejects multiple unified configs in the same directory', async () => {

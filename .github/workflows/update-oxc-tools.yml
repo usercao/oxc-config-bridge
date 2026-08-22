@@ -23,31 +23,37 @@ jobs:
 
       - uses: actions/setup-node@v7
         with:
-          node-version: 24
-          cache: npm
+          node-version: 24.19.0
+          cache: yarn
+          cache-dependency-path: yarn.lock
 
-      - run: npm ci
+      - run: corepack enable
+      - run: yarn install --immutable
 
       - name: Upgrade Oxc toolchain
-        run: npm install --save oxfmt@latest oxlint@latest oxlint-tsgolint@latest
+        run: yarn up --no-time-gate oxfmt oxlint oxlint-tsgolint
 
       - name: Stop if no dependency changes
         id: changes
         run: |
-          if git diff --quiet -- package.json package-lock.json; then
+          if git diff --quiet -- package.json yarn.lock; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           echo "changed=true" >> "$GITHUB_OUTPUT"
 
       - if: steps.changes.outputs.changed == 'true'
-        run: npm test
+        run: yarn format
+
+      - if: steps.changes.outputs.changed == 'true'
+        run: yarn check
 
       - if: steps.changes.outputs.changed == 'true'
         name: Commit and push updates
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add package.json package-lock.json
+          git add package.json yarn.lock
+          git add -u
           git commit -m 'chore: upgrade oxfmt and oxlint'
           git push

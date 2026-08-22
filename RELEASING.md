@@ -15,7 +15,7 @@ Before releasing, confirm:
 Run the complete local check:
 
 ```sh
-npm run check
+yarn check
 ```
 
 ## Publish a release
@@ -28,8 +28,8 @@ Publishing the GitHub release triggers `.github/workflows/publish.yml`. The work
 
 - Exchanges GitHub's OIDC identity for a short-lived npm credential.
 - Uses the release tag as the npm package version and rejects a `v` prefix or incomplete version.
-- Installs dependencies from `package-lock.json`.
-- Runs the package test suite through npm lifecycle scripts.
+- Installs dependencies from `yarn.lock`.
+- Runs `yarn check` before publishing to npm with provenance.
 - Publishes to npm with provenance.
 
 GitHub Releases always require a tag, but creating the release in the GitHub UI creates that tag for you. The workflow does not create a Git tag or commit.

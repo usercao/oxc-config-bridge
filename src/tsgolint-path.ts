@@ -13,7 +13,7 @@ function resolveWindowsTsgolintExecutable(pathCandidates: string[]): string {
         join(realBinDirectory, 'tsgolint.exe'),
         join(realBinDirectory, 'tsgolint.cmd'),
       ].find((candidate) => existsSync(candidate))
-      } catch {}
+    } catch {}
   }
 
   if (!executablePath) {

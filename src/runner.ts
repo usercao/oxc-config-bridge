@@ -29,15 +29,11 @@ export async function runTool(
   const binPath = await resolveToolBin(tool)
   const environment = { ...process.env }
   enableVitePlusConfigDiscovery(environment, tool)
-  const child = spawn(
-    process.execPath,
-    ['--import', VITE_PLUS_PRELOAD_URL, binPath, ...args],
-    {
-      cwd,
-      env: environment,
-      stdio: options?.onOutput ? ['inherit', 'pipe', 'pipe'] : 'inherit',
-    },
-  )
+  const child = spawn(process.execPath, ['--import', VITE_PLUS_PRELOAD_URL, binPath, ...args], {
+    cwd,
+    env: environment,
+    stdio: options?.onOutput ? ['inherit', 'pipe', 'pipe'] : 'inherit',
+  })
   if (options?.onOutput) {
     child.stdout?.setEncoding('utf8')
     child.stderr?.setEncoding('utf8')

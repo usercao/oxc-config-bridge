@@ -27,7 +27,8 @@ async function main(): Promise<number> {
     }
 
     const result = await initializeVsCodeSettings()
-    const verb = result === 'created' ? 'Created' : result === 'updated' ? 'Updated' : 'Already configured'
+    const verb =
+      result === 'created' ? 'Created' : result === 'updated' ? 'Updated' : 'Already configured'
     process.stdout.write(`${verb} .vscode/settings.json\n`)
     return 0
   }

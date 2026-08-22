@@ -1,9 +1,14 @@
 import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises'
 import path from 'node:path'
+
 import { afterEach, describe, expect, test } from 'vitest'
 
 import { runTool } from '../src/runner.js'
-import { cleanupTemporaryDirectories, createTempDirectory, createUnifiedFixture } from './helpers.js'
+import {
+  cleanupTemporaryDirectories,
+  createTempDirectory,
+  createUnifiedFixture,
+} from './helpers.js'
 
 afterEach(async () => {
   await cleanupTemporaryDirectories()
@@ -16,14 +21,16 @@ describe('runner integration', () => {
     await writeFile(sourcePath, `const message = "hello";\nconsole.log(message);\n`)
 
     expect(await runTool('oxfmt', ['source.ts'], { cwd: directory })).toBe(0)
-    expect(await readFile(sourcePath, 'utf8')).toBe(`const message = 'hello'\nconsole.log(message)\n`)
+    expect(await readFile(sourcePath, 'utf8')).toBe(
+      `const message = 'hello'\nconsole.log(message)\n`,
+    )
     expect(await runTool('oxfmt', ['--check', '.'], { cwd: directory })).toBe(0)
     expect(await runTool('oxlint', ['source.ts'], { cwd: directory })).toBe(0)
 
     const remainingFiles = await readdir(directory)
-    expect(remainingFiles.some((filename) => /^\.oxc-bridge\.(oxlint|oxfmt)\./.test(filename))).toBe(
-      false,
-    )
+    expect(
+      remainingFiles.some((filename) => /^\.oxc-bridge\.(oxlint|oxfmt)\./.test(filename)),
+    ).toBe(false)
   })
 
   test('loads a parent unified config from a nested working directory', async () => {
@@ -52,7 +59,9 @@ describe('runner integration', () => {
     ).not.toBe(0)
     expect(output).toContain('eslint(no-debugger)')
     const remainingFiles = await readdir(directory)
-    expect(remainingFiles.some((filename) => filename.startsWith('.oxc-bridge.oxlint.'))).toBe(false)
+    expect(remainingFiles.some((filename) => filename.startsWith('.oxc-bridge.oxlint.'))).toBe(
+      false,
+    )
   })
 
   test('preserves sortPackageJson rules for package.json files', async () => {
@@ -98,7 +107,9 @@ describe('runner integration', () => {
     const sourcePath = path.join(directory, 'source.ts')
     await writeFile(sourcePath, 'const message = "hello";\n')
 
-    expect(await runTool('oxfmt', ['--config', 'vite.config.ts', 'source.ts'], { cwd: directory })).toBe(0)
+    expect(
+      await runTool('oxfmt', ['--config', 'vite.config.ts', 'source.ts'], { cwd: directory }),
+    ).toBe(0)
     expect(await readFile(sourcePath, 'utf8')).toBe("const message = 'hello'\n")
   })
 

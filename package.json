@@ -3,12 +3,12 @@
   "version": "0.6.2",
   "description": "Use Oxc's Vite+ config discovery with Vite, without Vite+",
   "keywords": [
-    "oxc",
-    "oxfmt",
-    "oxlint",
     "config",
     "formatter",
     "linter",
+    "oxc",
+    "oxfmt",
+    "oxlint",
     "vite",
     "vite-plus"
   ],
@@ -16,26 +16,26 @@
   "bugs": {
     "url": "https://github.com/usercao/vite-oxc-bridge/issues"
   },
+  "license": "MIT",
+  "author": "usercao",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/usercao/vite-oxc-bridge.git"
   },
-  "license": "MIT",
-  "author": "usercao",
-  "type": "module",
-  "sideEffects": false,
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "bin": {
-    "vite-oxc-bridge": "dist/cli.js",
     "oxfmt": "bin/oxfmt.js",
-    "oxlint": "bin/oxlint.js"
+    "oxlint": "bin/oxlint.js",
+    "vite-oxc-bridge": "dist/cli.js"
   },
   "files": [
     "bin",
     "dist",
     "README.md"
   ],
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -44,11 +44,19 @@
     },
     "./package.json": "./package.json"
   },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "scripts": {
     "build": "node --input-type=module --eval \"import { rm } from 'node:fs/promises'; await rm('dist', { recursive: true, force: true })\" && tsc -p tsconfig.json",
-    "check": "npm test && npm pack --dry-run",
-    "prepack": "npm run build",
-    "prepublishOnly": "npm test",
+    "check": "yarn format:check && yarn lint && yarn test && yarn pack --dry-run",
+    "format": "yarn exec oxfmt --write .",
+    "format:check": "yarn exec oxfmt --check .",
+    "lint": "yarn exec oxlint .",
+    "lint:fix": "yarn exec oxlint --fix .",
+    "prepack": "yarn build",
+    "prepublishOnly": "yarn test",
     "test": "tsc -p tsconfig.json && tsc -p tsconfig.test.json --noEmit && vitest run"
   },
   "dependencies": {
@@ -58,20 +66,16 @@
     "oxlint-tsgolint": "^7.0.2001"
   },
   "devDependencies": {
-    "@types/node": "^24.13.3",
+    "@types/node": "^24",
     "typescript": "~6.0.2",
-    "vite": "7.3.6",
-    "vitest": "^3.2.4"
+    "vite": "8.2.2",
+    "vitest": "^4.1.11"
   },
   "peerDependencies": {
     "vite": ">=5.0.0"
   },
   "engines": {
-    "node": ">=22.18.0"
+    "node": ">=24.19.0"
   },
-  "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org/"
-  },
-  "packageManager": "npm@11.17.0"
+  "packageManager": "yarn@4.18.0"
 }

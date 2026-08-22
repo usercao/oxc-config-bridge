@@ -3,5 +3,4 @@
 /dist/
 /coverage/
 *.tsbuildinfo
-/.oxc-bridge.oxfmt.generated.mjs
-/.oxc-bridge.oxlint.generated.mjs
+.yarn/*
